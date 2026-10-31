@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}{% block admin_title %}Admin{% endblock %}{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <h3>Dashboard</h3>
+        <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+            📊 Overview
+        </a>
+
+        <h3>Catalog</h3>
+        <a href="{{ url_for('admin.products') }}" class="{% if request.endpoint in ['admin.products', 'admin.add_product', 'admin.edit_product'] %}active{% endif %}">
+            📦 Products
+        </a>
+        <a href="{{ url_for('admin.add_product') }}" style="padding-left:44px; font-size:0.85rem;">+ Add Product</a>
+        <a href="{{ url_for('admin.categories') }}" class="{% if request.endpoint in ['admin.categories', 'admin.add_category', 'admin.edit_category'] %}active{% endif %}">
+            🏷️ Categories
+        </a>
+        <a href="{{ url_for('admin.add_category') }}" style="padding-left:44px; font-size:0.85rem;">+ Add Category</a>
+
+        <h3>Orders</h3>
+        <a href="{{ url_for('admin.orders') }}" class="{% if request.endpoint in ['admin.orders', 'admin.order_detail'] %}active{% endif %}">
+            🛒 All Orders
+        </a>
+        <a href="{{ url_for('admin.orders', status='pending') }}" style="padding-left:44px; font-size:0.85rem;">
+            ⏳ Pending ({{ pending_count|default(0) }})
+        </a>
+
+        <h3>Store</h3>
+        <a href="{{ url_for('main.index') }}" target="_blank">
+            🌐 View Store →
+        </a>
+    </aside>
+
+    <main class="admin-content">
+        {% block admin_content %}{% endblock %}
+    </main>
+</div>
+{% endblock %}

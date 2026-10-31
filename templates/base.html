@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ShopHub{% endblock %} | ShopHub</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% include 'navbar.html' %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            <div class="container">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    <span>{{ message }}</span>
+                    <span class="close-btn" onclick="this.parentElement.style.display='none'">&times;</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    {% include 'footer.html' %}
+
+    <script>
+        // Mobile menu toggle
+        const toggle = document.getElementById('navToggle');
+        const nav = document.getElementById('navMenu');
+        if (toggle && nav) {
+            toggle.addEventListener('click', () => {
+                nav.classList.toggle('show');
+            });
+        }
+
+        // Quantity selectors
+        document.querySelectorAll('.qty-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.parentElement.querySelector('input');
+                let val = parseInt(input.value) || 1;
+                if (this.dataset.action === 'minus') val = Math.max(1, val - 1);
+                if (this.dataset.action === 'plus') val = val + 1;
+                input.value = val;
+            });
+        });
+
+        // Auto-hide flash messages
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(el => {
+                el.style.transition = 'opacity 0.3s';
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            });
+        }, 5000);
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

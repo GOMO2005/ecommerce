@@ -1,0 +1,46 @@
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-brand">🛍️ ShopHub</div>
+                <p class="footer-desc">
+                    Your one-stop destination for quality products at great prices.
+                    Shop with confidence and enjoy fast, reliable delivery.
+                </p>
+            </div>
+            <div>
+                <h4>Shop</h4>
+                <ul>
+                    {% for cat in categories|default([]) %}
+                    <li><a href="{{ url_for('main.category', category_id=cat.id) }}">{{ cat.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <h4>Account</h4>
+                <ul>
+                    {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('orders.list_orders') }}">My Orders</a></li>
+                    <li><a href="{{ url_for('cart.view') }}">Cart</a></li>
+                    <li><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+                    {% else %}
+                    <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                    <li><a href="{{ url_for('auth.register') }}">Register</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <div>
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Shipping Info</a></li>
+                    <li><a href="#">Returns</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            &copy; {{ now().year if now is defined else 2025 }} ShopHub. All rights reserved.
+        </div>
+    </div>
+</footer>

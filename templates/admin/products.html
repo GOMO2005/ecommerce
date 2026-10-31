@@ -1,0 +1,78 @@
+{% extends 'admin/base.html' %}
+
+{% block admin_title %}Products{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-between align-center mb-3">
+    <h2>Products</h2>
+    <a href="{{ url_for('admin.add_product') }}" class="btn btn-primary">+ Add Product</a>
+</div>
+
+<div class="admin-card">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for product in products.items %}
+            <tr>
+                <td>
+                    <img src="{{ product.image_url }}" alt="{{ product.name }}" class="thumb"
+                         onerror="this.src='https://picsum.photos/seed/fallback-{{ product.id }}/80/80'">
+                </td>
+                <td><strong>{{ product.name }}</strong></td>
+                <td>{{ product.category.name }}</td>
+                <td>${{ '%.2f'|format(product.price) }}</td>
+                <td>
+                    {% if product.stock > 10 %}
+                        <span class="text-success">{{ product.stock }}</span>
+                    {% elif product.stock > 0 %}
+                        <span class="text-warning">{{ product.stock }}</span>
+                    {% else %}
+                        <span class="text-danger">0 (Out of stock)</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="actions">
+                        <a href="{{ url_for('admin.edit_product', product_id=product.id) }}" class="btn btn-sm btn-secondary">Edit</a>
+                        <form action="{{ url_for('admin.delete_product', product_id=product.id) }}" method="post"
+                              onsubmit="return confirm('Delete this product?')">
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if products.pages > 1 %}
+<div class="pagination">
+    {% if products.has_prev %}
+        <a href="{{ url_for('admin.products', page=products.prev_num) }}">← Prev</a>
+    {% endif %}
+    {% for p in products.iter_pages() %}
+        {% if p %}
+            {% if p == products.page %}
+                <span class="active">{{ p }}</span>
+            {% else %}
+                <a href="{{ url_for('admin.products', page=p) }}">{{ p }}</a>
+            {% endif %}
+        {% else %}
+            <span class="disabled">…</span>
+        {% endif %}
+    {% endfor %}
+    {% if products.has_next %}
+        <a href="{{ url_for('admin.products', page=products.next_num) }}">Next →</a>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

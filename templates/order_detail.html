@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="orders-page">
+    <div class="container-sm">
+        <div class="breadcrumb">
+            <a href="{{ url_for('main.index') }}">Home</a>
+            <span class="separator">/</span>
+            {% if current_user.is_admin %}
+                <a href="{{ url_for('admin.orders') }}">All Orders</a>
+            {% else %}
+                <a href="{{ url_for('orders.list_orders') }}">My Orders</a>
+            {% endif %}
+            <span class="separator">/</span>
+            <span>Order #{{ order.id }}</span>
+        </div>
+
+        <div class="order-card">
+            <div class="order-card-header">
+                <div>
+                    <h2>Order #{{ order.id }}</h2>
+                    <span class="text-muted" style="font-size:0.85rem;">
+                        Placed on {{ order.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                    </span>
+                </div>
+                <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:24px;">
+                <div>
+                    <h4 style="font-size:0.85rem; text-transform:uppercase; color:var(--gray-500); letter-spacing:0.5px; margin-bottom:8px;">Shipping Address</h4>
+                    <p style="font-size:0.9rem; line-height:1.6;">
+                        {{ order.shipping_name }}<br>
+                        {{ order.shipping_address }}<br>
+                        {{ order.shipping_city }}, {{ order.shipping_state }} {{ order.shipping_zip }}<br>
+                        📞 {{ order.shipping_phone }}
+                    </p>
+                </div>
+                <div>
+                    <h4 style="font-size:0.85rem; text-transform:uppercase; color:var(--gray-500); letter-spacing:0.5px; margin-bottom:8px;">Order Info</h4>
+                    <p style="font-size:0.9rem; line-height:1.6;">
+                        <strong>Items:</strong> {{ order.items|length }}<br>
+                        <strong>Total:</strong> ${{ '%.2f'|format(order.total_amount) }}<br>
+                        <strong>Status:</strong> {{ order.status|capitalize }}
+                    </p>
+                </div>
+            </div>
+
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items %}
+                    <tr>
+                        <td>
+                            <div class="cart-product">
+                                <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}"
+                                     onerror="this.src='https://picsum.photos/seed/fallback-{{ item.product_id }}/100/100'">
+                                <div>
+                                    <div class="cart-product-name">{{ item.product.name }}</div>
+                                    <div class="cart-product-cat">{{ item.product.category.name }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>${{ '%.2f'|format(item.price) }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td style="font-weight:600;">${{ '%.2f'|format(item.price * item.quantity) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div style="max-width:300px; margin-left:auto; margin-top:20px;">
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span>${{ '%.2f'|format(order.total_amount) }}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>{% if order.total_amount >= 50 %}<span class="text-success">FREE</span>{% else %}$9.99{% endif %}</span>
+                </div>
+                <div class="summary-row summary-total" style="margin-top:8px; padding-top:12px; border-top:2px solid var(--gray-200);">
+                    <span>Total</span>
+                    <span>${{ '%.2f'|format(order.total_amount if order.total_amount >= 50 else order.total_amount + 9.99) }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

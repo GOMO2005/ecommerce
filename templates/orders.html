@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block content %}
+<div class="orders-page">
+    <div class="container-sm">
+        <div class="breadcrumb">
+            <a href="{{ url_for('main.index') }}">Home</a>
+            <span class="separator">/</span>
+            <span>My Orders</span>
+        </div>
+
+        <h2 class="section-title">My Orders</h2>
+        <p class="section-subtitle">Track and manage your orders</p>
+
+        {% if orders.items %}
+        {% for order in orders.items %}
+        <div class="order-card">
+            <div class="order-card-header">
+                <div>
+                    <h3>Order #{{ order.id }}</h3>
+                    <span class="text-muted" style="font-size:0.85rem;">
+                        {{ order.created_at.strftime('%B %d, %Y at %I:%M %p') }}
+                    </span>
+                </div>
+                <div class="d-flex align-center gap-2">
+                    <span class="status-badge status-{{ order.status }}">{{ order.status }}</span>
+                    <a href="{{ url_for('orders.order_detail', order_id=order.id) }}" class="btn btn-sm btn-secondary">
+                        View
+                    </a>
+                </div>
+            </div>
+            <div class="order-items-list">
+                {% for item in order.items %}
+                <div class="order-item-row">
+                    <span class="item-name">{{ item.product.name }} × {{ item.quantity }}</span>
+                    <span class="item-price">${{ '%.2f'|format(item.price * item.quantity) }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="order-total-row">
+                <span>Total</span>
+                <span>${{ '%.2f'|format(order.total_amount) }}</span>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if orders.pages > 1 %}
+        <div class="pagination">
+            {% if orders.has_prev %}
+                <a href="{{ url_for('orders.list_orders', page=orders.prev_num) }}">← Prev</a>
+            {% endif %}
+            {% for p in orders.iter_pages() %}
+                {% if p %}
+                    {% if p == orders.page %}
+                        <span class="active">{{ p }}</span>
+                    {% else %}
+                        <a href="{{ url_for('orders.list_orders', page=p) }}">{{ p }}</a>
+                    {% endif %}
+                {% else %}
+                    <span class="disabled">…</span>
+                {% endif %}
+            {% endfor %}
+            {% if orders.has_next %}
+                <a href="{{ url_for('orders.list_orders', page=orders.next_num) }}">Next →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="cart-empty">
+            <div class="empty-icon">📦</div>
+            <h3>No orders yet</h3>
+            <p class="text-muted mt-1">Your order history will appear here.</p>
+            <a href="{{ url_for('main.index') }}" class="btn btn-primary mt-2">Start Shopping</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

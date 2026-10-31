@@ -1,0 +1,45 @@
+<nav class="navbar">
+    <div class="container">
+        <a href="{{ url_for('main.index') }}" class="navbar-brand">
+            <span class="brand-icon">🛍️</span>
+            ShopHub
+        </a>
+
+        <form class="navbar-search" action="{{ url_for('main.search') }}" method="get">
+            <input type="text" name="q" placeholder="Search products..." value="{{ request.args.get('q', '') }}">
+            <button type="submit">🔍</button>
+        </form>
+
+        <button class="navbar-toggle" id="navToggle">☰</button>
+
+        <ul class="navbar-nav" id="navMenu">
+            <li><a href="{{ url_for('main.index') }}">Home</a></li>
+            <li>
+                <a href="{{ url_for('cart.view') }}">
+                    🛒 Cart
+                    {% if cart_count > 0 %}
+                        <span class="cart-badge">{{ cart_count }}</span>
+                    {% endif %}
+                </a>
+            </li>
+
+            {% if current_user.is_authenticated %}
+                <li class="navbar-dropdown">
+                    <a href="javascript:void(0)">
+                        👤 {{ current_user.username }}
+                    </a>
+                    <div class="navbar-dropdown-menu">
+                        <a href="{{ url_for('orders.list_orders') }}">📦 My Orders</a>
+                        {% if current_user.is_admin %}
+                            <a href="{{ url_for('admin.dashboard') }}">⚙️ Admin Dashboard</a>
+                        {% endif %}
+                        <a href="{{ url_for('auth.logout') }}">🚪 Logout</a>
+                    </div>
+                </li>
+            {% else %}
+                <li><a href="{{ url_for('auth.login') }}">Login</a></li>
+                <li><a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Register</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>

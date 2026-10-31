@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="container">
+        <div class="breadcrumb">
+            <a href="{{ url_for('main.index') }}">Home</a>
+            <span class="separator">/</span>
+            <a href="{{ url_for('cart.view') }}">Cart</a>
+            <span class="separator">/</span>
+            <span>Checkout</span>
+        </div>
+
+        <h2 class="section-title mb-3">Checkout</h2>
+
+        <div class="checkout-grid">
+            <div>
+                <div class="admin-form-card">
+                    <h3>📦 Shipping Information</h3>
+                    <form method="post">
+                        {{ form.hidden_tag() }}
+
+                        <div class="admin-form-grid">
+                            <div class="full-width">
+                                <div class="form-group">
+                                    {{ form.full_name.label }}
+                                    {{ form.full_name(class='form-control', placeholder='John Doe') }}
+                                    {% for error in form.full_name.errors %}
+                                        <div class="form-error">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="full-width">
+                                <div class="form-group">
+                                    {{ form.address.label }}
+                                    {{ form.address(class='form-control', placeholder='123 Main Street, Apt 4B') }}
+                                    {% for error in form.address.errors %}
+                                        <div class="form-error">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    {{ form.city.label }}
+                                    {{ form.city(class='form-control', placeholder='New York') }}
+                                    {% for error in form.city.errors %}
+                                        <div class="form-error">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    {{ form.state.label }}
+                                    {{ form.state(class='form-control', placeholder='NY') }}
+                                    {% for error in form.state.errors %}
+                                        <div class="form-error">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    {{ form.zip_code.label }}
+                                    {{ form.zip_code(class='form-control', placeholder='10001') }}
+                                    {% for error in form.zip_code.errors %}
+                                        <div class="form-error">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div>
+                                <div class="form-group">
+                                    {{ form.phone.label }}
+                                    {{ form.phone(class='form-control', placeholder='555-1234-5678') }}
+                                    {% for error in form.phone.errors %}
+                                        <div class="form-error">{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <div class="full-width">
+                                <button type="submit" class="btn btn-primary btn-block btn-lg mt-2">
+                                    🔒 Place Order — ${{ '%.2f'|format(total if total >= 50 else total + 9.99) }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div>
+                <div class="checkout-items">
+                    <h3>Order Items ({{ items|length }})</h3>
+                    {% for item in items %}
+                    <div class="checkout-item">
+                        <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}"
+                             onerror="this.src='https://picsum.photos/seed/fallback-{{ item.product.id }}/100/100'">
+                        <div class="checkout-item-info">
+                            <div class="checkout-item-name">{{ item.product.name }}</div>
+                            <div class="checkout-item-qty">Qty: {{ item.quantity }}</div>
+                        </div>
+                        <div class="checkout-item-price">${{ '%.2f'|format(item.subtotal) }}</div>
+                    </div>
+                    {% endfor %}
+
+                    <div style="border-top:2px solid var(--gray-200); margin-top:12px; padding-top:12px;">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>${{ '%.2f'|format(total) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span>{% if total >= 50 %}<span class="text-success">FREE</span>{% else %}$9.99{% endif %}</span>
+                        </div>
+                        <div class="summary-row summary-total" style="margin-top:8px; padding-top:12px; border-top:2px solid var(--gray-200);">
+                            <span>Total</span>
+                            <span>${{ '%.2f'|format(total if total >= 50 else total + 9.99) }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
